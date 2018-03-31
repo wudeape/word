@@ -1,0 +1,48 @@
+
+一、系统权限回收：
+如果数据库管理员用GRANT 命令给用户A授予系统权限时带有WITH ADMIN OPTION 选项，则用户A有权将系统权限再次授予另外的用户B。在这种情况下，如果数据库管理员使用REVOKE命令撤销A用户的系统权限，用户B的系统权限是否存在？(存在)
+
+举例：system(create session)->a(create session)->b
+如果a的系统权限被回收，那么b的系统权限是否被级联回收？
+
+验证过程：
+conn system/orcl;
+create user a identified by a;
+create user b identified by b;
+grant create session to a with admin option;
+conn a/a;
+grant create session to b;
+conn b/b;
+
+conn system/orcl;
+revoke create session from a;
+
+conn b/b;
+
+
+
+对象权限回收：
+
+如果数据库管理员用GRANT 命令给用户A授予对象权限时带有WITH GRANT OPTION 选项，则用户A有权将对象权限再次授予另外的用户B。在这种情况下，如果数据库管理员使用REVOKE命令撤销A用户的对象权限，用户B的对象权限是否存在？()
+
+举例：system(查询emp)->a(查询emp)->b
+如果a的对象权限被回收，那么b的对象权限是否被级联回收？
+验证过程：
+conn system/orcl;
+grant create session to a;
+grant select on scott.emp to a with grant option;
+conn a/a;
+select * from scott.emp;
+
+grant select on scott.emp to b;
+conn b/b;
+select * from scott.emp;
+
+conn system/orcl;
+revoke select on scott.emp from a;
+
+conn a/a;
+select * from scott.emp;
+
+conn b/b;
+select * from scott.emp;

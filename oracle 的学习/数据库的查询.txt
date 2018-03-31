@@ -1,0 +1,27 @@
+  1 在scott 的模式下 用select * 来检索dept表的所有数据
+ select * from dept；
+若是在system模式下 需要的scott.dept
+
+2在from 子句中指定 两个数据表dept和salgarder
+ select * from scott.dept,scott.salgrader
+
+3 查询指定的列 
+ select job ,emp,ename, empno form scott.emp;
+
+4为列名指定别名 （把指定的empno，ename，job 变成汉语解说）
+select empno as"员工编号"，enamel as"员工名称",job as "职务" from scott.emp;
+
+5 计算列值（检索emp表的sal列。并把值调整为原来的1.1倍）
+select sal*(1+0.1),sal form scott.emp;
+
+6消除 重复的行 （显示emp表的job）
+select distinct job from scott.emp;
+
+ 选择行
+1 表达式比较 （查询emp中工资大于1500的数据记录）
+select empno ,enaem,sal from scott.emp where sal >1500;
+2 模式匹配 （查询以S开头的任意长度的员工名称）
+select empno,ename, job from emp where ename like 'S%';
+可以再like的关键字前面加上 not 表示否定的判断 
+3 范围比较（in和between）
+

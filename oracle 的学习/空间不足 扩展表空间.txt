@@ -1,0 +1,48 @@
+一、什么是表空间。
+   表空间就像一个文件夹，是存储数据库对象的容器，如果要创建表，首先要创建能够存储表的表空间。
+表空间由数据文件组成，这些数据文件是数据库实际存放数据的地方。数据库的所有系统数据和用户数据都必须放在数据文件中。每一个数据库创建的时候，系统都会默认为它创建几个表空间，以存储系统信息。一般情况下，用户数据应该存放在单独的表空间中。所以必须创建和使用自己的表空间。
+
+二、如何扩展表空间
+   表空间是由数据文件组成的，表空间的大小实际上就是数据文件相加后的大小，那么我们可以想象，假定表t放到ts01表空间上，初始大小就是2m,当数据满2m空间后，如果再向t表插入数据，这样就会显示空间不足的错误：
+
+扩展表空间的方法举例：
+
+1.创建一个表空间ts01
+create tablespace ts01 datafile 'D:\test\ts01.dbf' size 1m;
+create tablespace ts01 datafile 'D:\test\ts01.dbf' size 1m  reuse;
+
+2.在该表空间上创建一个t表，其结构和dept表一样
+create table t(no number(2),name varchar2(14),loc varchar2(13)) tablespace ts01;
+
+3.向t表中插入数据
+insert into t select * from scott.dept;
+insert into t select * from t;
+
+4.扩展表空间
+（1）增加数据文件
+alter tablespace ts01 add  datafile 'D:\test\ts02.dbf' size 1m;
+
+（2）增加数据文件大小
+alter database datafile  'D:\test\ts01.dbf' resize 6m;
+
+（3）设置数据文件的大小为自动增长
+alter database datafile  'D:\test\ts02.dbf' autoextend on next 5m maxsize 50m;
+
+（4）增加数据文件并设置自动增长
+alter tablespace ts01 add  datafile 'D:\test\ts04.dbf' size 2m autoextend on next 5m maxsize 50m;
+
+删除表空间ts01
+drop tablespace ts01 including contents and datafiles;或者:
+drop tablespace ts01 including contents  and datafiles  cascade constraints;
+
+
+
+删除表空间的数据文件ts02.dbf
+alter tablespace ts01 drop  datafile 'D:\test\ts02.dbf';
+
+
+
+
+
+
+
