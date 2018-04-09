@@ -85,7 +85,7 @@ move(int *x, int *y, int *dir)
   *dir = (*dir + 1) % 4;
  else {
   *x = nx;
-  *y = ny;
+  *y = ny;7
  }
 }
 
