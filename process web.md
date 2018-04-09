@@ -64,6 +64,41 @@
 另一种方式 
 <a href="javascript:showdiv();" "email me">email me</a>
 
+# 登录部分的实现（功能是不完全的）
++ dao部分是进行数据的处理部分需要进行与数据库的交互 目前是login,isExist,save(register)，isExistResume..
++ servlet 是来处理逻辑部分 
+*  registersevelet 部分 
+request.getParameter 来获取email和password 然后 对email if  else 两种不同结果的实现
+*  loginsevelet 部分
+（首先是js的校检）onsubmit  然后email 和password的比较 目前还没有实现相应的登录验证 等功能
+
+#  个人简历
+* 数据的存入部分（dao部分) 以下是servlet部分
+ String type = request.getParameter("type");
+ if ("add".equals(type)) {
+			ResumeBasicinfo basicinfo = this.requestDataObj(request);		
+			ResumeDAO dao = new ResumeDAO();
+		
+   int basicinfoID = dao.add(basicinfo, 1);
+		
+response.sendRedirect("applicant/resume.html");
+}
+ 
+ 与前端页面对应的是 /Q_ITOffer_Chapter03/ResumeBasicinfoServlet?type=add  全路径
+
+ * 如果进行数据更新 resumemessage 
+ 将简历信息封装成一个对象 本体的例子是在servlet封装，
+ 首先是获取相应页面的信息
+ request.getParameter("");  存在string中
+ basicinfo = new ResumeBasicinfo(realName, gender, birthdayDate,
+				currentLoca, residentLoca, telephone, email, jobIntension,
+				jobExperience);
+return basicinfo;
+
+# 图片的上传
+
+
+
 
 
 
