@@ -96,9 +96,213 @@ response.sendRedirect("applicant/resume.html");
 return basicinfo;
 
 # 图片的上传
++  <input name="headShot" id="headShot" type="file" value="上传照片"> 然后在头部的js 进行图片的校检  type= file
+<script  type="text/javascript" charset="utf-8" >
+	function validate(){
+			var headShot = document.getElementById("headShot");
+		if (headShot.value == "") {
+			alert("请选择要上传的头像！");
+			headShot.focus();
+			return false;
+		}
+		return true;
+	}
+</script>
+
+同样的文件的上传是放在 form表单中
+<form action="/Q_ITOffer_Chapter03/ResumePicUploadServlet" method="post">
+	接收响应后 servlet 处理   实际实现文件上传的是servlet的注解 @MultipartConfig  (其他的框架是使用各自封装的方法类)
+首先是获取上传文件域
+Part part = request.getPart("headShot");   就是表单的class
+// 获取上上传文件的名字
+String Filename = part.getSubmittedFilename();
+//防止文件重名，进行重定义
+String newFilename = System.currnetTimeMills()+fileName.substirng(fileName.lastIndexOf("."));
+//文件的保存路径
+String filepath= getServletContext().getRealPath("url");
+System.out.println("头像保存路径为：" + filepath);
+		File f = new File(filepath);
+		if (!f.exists())
+			f.mkdirs();
+		part.write(filepath + "/" + newFileName);
+// 更新简历照片
+ResumeDAO dao = new ResumeDAO();
+dao.updateHeadShot(1,newFileName)；   // 序列是不对的 ？ 怎样合理的存放
+response.sendRedirect ("url");  // 一般是默认重定向在本页面
+
+
+public void updateHeadShot(int basicinfoId, String newFileName) {
+		String sql = "UPDATE tb_resume_basicinfo SET head_shot=? WHERE basicinfo_id=?";
+		Connection conn = DBUtil.getConnection();
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, newFileName);
+			pstmt.setInt(2, basicinfoId);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeJDBC(null, pstmt, conn);
+		}
+}
+
+
+# 注册验证码的实现
+<div class="span1">
+<label class="tn-form-label">验证码：</label> <input
+		class="tn-textbox-long" type="text" name="verifyCode"> <span>
+		<img src="ValidateCodeServlet"
+	id="validateCode" title="点击换一换" onclick="changeValidateCode()">
+	<a href="javascript:changeValidateCode();">看不清？</a>
+ </span>
+</div>
+
+验证码的更换 
+ function changeValidateCode() {
+document.getElementById("validateCode").src = "ValidateCodeServlet?rand="
+	+ Math.random();
+}
+
+js实现验证码（手机号验证 未完成）
+此处是   只是前台的页面进行验证的输入
+<script type="text/javascript">
+var code;
+function createCode() 
+{
+ code = "";
+ var codeLength = 6; //验证码的长度
+ var checkCode = document.getElementById("checkCode");
+ var codeChars = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 
+      'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'); //所有候选组成验证码的字符，当然也可以用中文的
+ for(var i = 0; i < codeLength; i++) 
+ {
+  var charNum = Math.floor(Math.random() * 52);
+  code += codeChars[charNum];
+ }
+ if(checkCode) 
+ {
+  checkCode.className = "code";
+  checkCode.innerHTML = code;
+ }
+}
+function validateCode() 
+{
+ var inputCode=document.getElementById("inputCode").value;
+ if(inputCode.length <= 0) 
+ {
+  alert("请输入验证码！");
+ }
+ else if(inputCode.toUpperCase() != code.toUpperCase()) 
+ {
+   alert("验证码输入有误！");
+   createCode();
+ }
+ else 
+ {
+  alert("验证码正确！");
+ }    
+}  
+</script> 
+
+
+## 回话跟踪部分
+# 将验证码保存到session中
+request.getSession().setAttribute("SESSION_VALIDATECODE", code);
+ code 是servlet部分生成的验证码，存储在session的作用是  
+ 在进行注册时 验证码作为首先校检 然后进行其他条件的判断
+ String email = request.getParameter("email");
+		String password = request.getParameter("password");
+		String verifyCode = request.getParameter("verifyCode");
+		// 判断验证码是否正确
+		String sessionValidateCode = (String)request.getSession().getAttribute("SESSION_VALIDATECODE");
+		if(!sessionValidateCode.equals(verifyCode))      
+		{
+		out.print("<script type='text/javascript'>");                                                        
+		 out.print("alert('请正确输入验证码！');");
+			out.print("window.location='register.html';");
+			out.print("</script>");
+		}else{
+			// 判断邮箱是否已被注册
+			ApplicantDAO dao = new ApplicantDAO();
+			boolean flag = dao.isExistEmail(email);
+			if(flag){
+				// 邮箱已注册,进行错误提示
+				out.print("<script type='text/javascript'>");                                                
+				out.print("alert('邮箱已被注册，请重新输入！');");
+				out.print("window.location='register.html';");
+				out.print("</script>");
+			}else{
+				// 邮箱未被注册，保存注册用户信息
+				dao.save(email,password);
+				// 注册成功，重定向到登录页面
+				response.sendRedirect("login.html");
+			}
+		}
+	}
+
+# 完善登录功能
+
+在用户登录成功后进行对求职者的信息跟踪，检验是否有简历，若有的话进行简历信息的跟踪
+ 添加Applicat.java  进行对求职者信息的封装 
+  if (applicantID != 0) {
+// 用户登录成功,将求职者信息存入session      
+ Applicant applicant = new Applicant(applicantID, email, password);
+			request.getSession().setAttribute("SESSION_APPLICANT", applicant);
+			// 通过Cookie记住邮箱和密码
+			rememberMe(rememberMe, email, password, request, response);
+			// 判断是否已填写简历
+			int resumeID = dao.isExistResume(applicantID);           
+			if (resumeID != 0){
+				request.getSession().setAttribute("SESSION_RESUMEID", resumeID);
+				// 若简历已存在，跳到首页
+				response.sendRedirect("index.jsp");
+			}else
+				// 若简历不存在，跳到简历填写向导页面
+				response.sendRedirect("applicant/resumeGuide.html");
+		} else {
+			// 用户登录信息错误，进行错误提示
+			out.print("<script type='text/javascript'>");                                                    
+			out.print("alert('用户名或密码错误，请重新输入！');");
+			out.print("window.location='login.html';");
+			out.print("</script>");
+		}
+	}
+
+简历信息添加和图片的上传在操纵数据前都先从回话中获取用户的标识符（简历标识符），添加部分如上
+  // 简历添加操作
+		if ("add".equals(type)) {
+			// 封装请求数据
+			ResumeBasicinfo basicinfo = this.requestDataObj(request);
+			// 从会话对象中获取当前登录用户标识
+			Applicant applicant = (Applicant)request.getSession().getAttribute("SESSION_APPLICANT");
+			// 向数据库中添加当前用户的简历
+			ResumeDAO dao = new ResumeDAO();
+			int basicinfoID = dao.add(basicinfo, applicant.getApplicantId());
+			// 将简历标识存入会话对象中
+			request.getSession().setAttribute("SESSION_RESUMEID", basicinfoID);
+			// 操作成功，跳回“我的简历”页面
+			response.sendRedirect("applicant/resume.html");
+		}
+
+// 从会话对象中获取当前用户简历标识
+		int resumeID = (Integer)request.getSession().getAttribute("SESSION_RESUMEID");
+		// 更新简历照片
+		ResumeDAO dao = new ResumeDAO();
+		dao.updateHeadShot(resumeID, newFileName);
+		// 照片更新成功，回到“我的简历”页面
+		response.sendRedirect("applicant/resume.html");
+
+# 使用cookie记住登录信息
 
 
 
+
+
+## 补充 File 
+  + 待补充 （嘿嘿）
++ 借此分析一下dao ,一般都是 先进行 sql语句，然后 数据库创建连接 conn，pstmt, try catch进行在数据库的操纵，pstmt.set()  方法实现
 
 
 
