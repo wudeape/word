@@ -152,13 +152,13 @@ public void updateHeadShot(int basicinfoId, String newFileName) {
 <div class="span1">
 <label class="tn-form-label">验证码：</label> <input
 		class="tn-textbox-long" type="text" name="verifyCode"> <span>
-		<img src="ValidateCodeServlet"
+		<img src="ValidateCodeServlet"  // 此处相应后台servlet生成过程
 	id="validateCode" title="点击换一换" onclick="changeValidateCode()">
 	<a href="javascript:changeValidateCode();">看不清？</a>
  </span>
 </div>
-
-验证码的更换 
+  
+ 验证码的更换 
  function changeValidateCode() {
 document.getElementById("validateCode").src = "ValidateCodeServlet?rand="
 	+ Math.random();
@@ -294,13 +294,96 @@ request.getSession().setAttribute("SESSION_VALIDATECODE", code);
 		// 照片更新成功，回到“我的简历”页面
 		response.sendRedirect("applicant/resume.html");
 
-# 使用cookie记住登录信息
+
+# 使用cookie记住登录信息 (并且获取)
++  首先是jsp中的集成，java中读取cookie的信息
+cookie 的使用
+<%
+String applicantEmail = "";
+String applicantPwd = "";
+// 从客户端读取Cookie     都是遍历获取客户端的cookis
+Cookie[] cookies = request.getCookies();  
+if (cookies != null) {  
+  for (Cookie cookie : cookies) { 
+  加密处理 
+    if ("COOKIE_APPLICANTEMAIL".equals(cookie.getName())) {  
+    	// 解密获取存储在Cookie中的求职者Email
+      applicantEmail = com.qst.itoffer.util.CookieEncryptTool.decodeBase64(cookie.getValue());   
+    }  
+    if ("COOKIE_APPLICANTPWD".equals(cookie.getName())) {  
+    	// 解密获取存储在Cookie中的求职者登录密码
+      applicantPwd = com.qst.itoffer.util.CookieEncryptTool.decodeBase64(cookie.getValue());  
+    }  
+  }
+}
+%>
+
+jsp 页面页面文件中设置表单的  value  其作用是 读取<% %> 获取的cookie值
+ value="<%=applicantEmail%
+  value="<%=applicantPwd%   应该有一个触发或者按钮来实现 值的一次性获取
+ rememberMe 功能 就是一个选择框
+ <input	checked="checked" name="rememberMe" id="rememberMe"	class="tn-checkbox" type="checkbox" value="true"> <label for="RememberPassword" style="color: gray"> 记住密码</label>
+具体的实现在servlet 中
+// 通过Cookie记住邮箱和密码
+...    设置email，passowrd，设置参数获取
+			rememberMe(rememberMe, email, password, request, response);
+	rememberMe() 的实现方法 （cookie 的具体使用）  session在前，cookie在后，登录成功后，if  删除cookie else  保存，跳转 简历部分
+
+if ("true".equals(rememberMe)) {
+			// 记住邮箱及密码
+// cookie 的创建 Cookie lalacookie = new Cookie("username","parm");
+			Cookie cookie = new Cookie("COOKIE_APPLICANTEMAIL",
+					CookieEncryptTool.encodeBase64(email));
+			cookie.setPath("/");
+			cookie.setMaxAge(365 * 24 * 3600);
+			response.addCookie(cookie);
+
+cookie = new Cookie("COOKIE_APPLICANTPWD",
+					CookieEncryptTool.encodeBase64(password));
+			cookie.setPath("/");
+//  cookie 的存活时间 setMaxAge 的值是 0 表示删除，负数是临时
+			cookie.setMaxAge(365 * 24 * 3600);
+			response.addCookie(cookie);
+		} else {
+			// 将邮箱及密码Cookie清空
+			Cookie[] cookies = request.getCookies();
+			if (cookies != null) {
+				for (Cookie cookie : cookies) {
+					if ("COOKIE_APPLICANTEMAIL".equals(cookie.getName())
+							|| "COOKIE_APPLICANTPWD".equals(cookie.getName())) {
+						cookie.setMaxAge(0);
+						cookie.setPath("/");
+						response.addCookie(cookie);
+					}
+				}
+
+本项目中添加了cookieEnvryToo.java 进行加密和解密
+一般的是采用md5 （待实现）  本次项目是base64
+加密   （就是实现类型的转换，安全性较差）
+<pre>
+	try {
+			cleartext = new String(Base64.encodeBase64(cleartext
+					.getBytes("UTF-8")));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return cleartext;
+</pre>
+解密
+<pre>
+		try {
+			ciphertext = new String(Base64.decodeBase64(ciphertext.getBytes()),
+					"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return ciphertext;
+	}
+</pre>
 
 
-
-
-
-## 补充 File 
+    
+## 补充 File （java中流）
   + 待补充 （嘿嘿）
 + 借此分析一下dao ,一般都是 先进行 sql语句，然后 数据库创建连接 conn，pstmt, try catch进行在数据库的操纵，pstmt.set()  方法实现
 
