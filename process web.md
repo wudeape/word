@@ -71,6 +71,118 @@
 request.getParameter 来获取email和password 然后 对email if  else 两种不同结果的实现
 *  loginsevelet 部分
 （首先是js的校检）onsubmit  然后email 和password的比较 目前还没有实现相应的登录验证 等功能
+登陆成功后会进行根据 email和password 获取相应的applicat_ID 然后存放在session中 
+  ApplicantDAO dao = new ApplicantDAO();  // 进行数据操纵的获取
+		int applicantID = dao.login(email, password);   //得到ID
+		if (applicantID != 0) {
+			// 用户登录成功,将求职者信息存入session
+			Applicant applicant = new Applicant(applicantID, email, password);
+			request.getSession().setAttribute("SESSION_APPLICANT", applicant);
+还有cookie的remember me  
+	// 通过Cookie记住邮箱和密码
+			rememberMe(rememberMe, email, password, request, response);  //具体实现如
+
+* 登录部分，身份的保持不变，登录（js弹出），或者是在页面 ，注册验证码，（手机号验证）
+<!-- 登录div -->
+	<script type="text/javascript">
+		function regclick() {
+			jQuery("#regdivid").css("display", "");     // jquery 实现regdivid隐藏显示元素
+			// $('#regdivid').hide();  
+			jQuery.ajax({     // 通过此种方法加载远程数据  http://www.w3school.com.cn/jquery/ajax_ajax.asp
+				cache : false,
+				type : "POST",
+				url : "./outcomjsp/userreglogin.jsp", //把表单数据发送到ajax.jsp
+				data : {}, //要发送的是ajaxFrm表单中的数据
+				async : false,
+				error : function(request) {
+					alert("发送请求失败！");
+				},
+				success : function(data) {
+					// 其中 data 是回调函数的传参数 ，并不是data上述data值
+					jQuery("#regdivid").html(data);
+
+				}
+			});
+
+		}
+<!-- 注册div -->
+		function loginclick() {
+			jQuery("#logindivid").css("display", "");
+			jQuery.ajax({
+				cache : false,
+				type : "POST",
+				url : "./outcomjsp/userlogin.jsp", //把表单数据发送到ajax.jsp
+				data : {}, //要发送的是ajaxFrm表单中的数据
+				async : false,
+				error : function(request) {
+					alert("发送请求失败！");
+				},
+				success : function(data) {
+					jQuery("#logindivid").html(data);
+
+				}
+			});
+		}
+	</script>
+
+jquery的ajax使用
+	<pre>
+var configObj = {
+  method //数据的提交方式：get和post
+  url //数据的提交路劲
+  async //是否支持异步刷新，默认是true
+  data //需要提交的数据
+  dataType //服务器返回数据的类型，例如xml,String,Json等
+  success //请求成功后的回调函数
+  error //请求失败后的回调函数
+ }
+</pre>
+验证码的是实现  
+<p class="ticket-detail-msg msg2">
+									图片验证码：
+					<input type="text" class="validtext" id="logpicid"		name="validationCode" /><img
+										id="img_validation_code" src="validate_code.action" onclick="refresh();"/>
+										<a href="javascript:void(0);" onclick="refresh()">下一张</a>
+									    <label style="color: red" id="vlogpicid" ></label>
+								</p>
+	validate_code.action 再生成后也把生成的验证码进行了session存储
+	HttpSession session = request.getSession();
+		session.setMaxInactiveInterval(5 * 60);  // 设置session对象5分钟失效
+		//  将验证码保存在session对象中，key为validation_code
+		session.setAttribute("validation_code", validationCode.toString());
+ 需要注意的是 onclick的  refresh
+ function refresh()
+        {
+            var img = document.getElementById("img_validation_code");   // 正是页面设定的id
+            img.src = "validate_code.action?" + Math.random();            
+        }
+
+
+以上已经实现了注册和登录 小窗跳转和数据的捕捉，然后是数据的保存（session的设定）
+用来保持身份的不变 
+
+<s:if test="null==#session.nickname">
+						<a href="javascript:void(0)" class="mbutton green size1"
+						onclick="loginclick();">登录</a>
+				</s:if>
+				<s:else>
+ 你好,<s:property value="#session.nickname" />
+					
+<s:if test="2==#session.identity">
+ 律师
+ </s:if>
+					<s:if test="1==#session.identity">
+当事人
+ </s:if>
+					<a href="accountchoose!accountchoose.action">服务向导</a>
+					<a href="loginout.action">退出</a>
+				</s:else>
+
+其中 1，2 是数据库进行设定的，在注册时候已经存储了这个信息 
+session的创建 在只用servlet 的实现中，是在servlet 逻辑处理部分创建，但是在使用其他的框架时，比如hibernate   是通过sessionfactory 托管实现 session  ，本身就是在服务器段来获取暂时数据 的手段，一般一个项目只有一个sessionFactory 
+
+
+
 
 #  个人简历
 * 数据的存入部分（dao部分) 以下是servlet部分
