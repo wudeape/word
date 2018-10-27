@@ -1,0 +1,16 @@
+
+ openstack的云主机网络设置
+https://www.cnblogs.com/horizonli/p/5172100.html 
+
+
+运维网址
+https://billwang139967.gitbooks.io/op_practice_book/content/ 
+
+centos7安装openvswitch虚拟交换机
+https://blog.csdn.net/sqzhao/article/details/71077130
+
+官方安装openvswitch
+http://docs.openvswitch.org/en/latest/intro/install/general/#obtaining-open-vswitch-sources
+
+爱奇艺地址破解
+http://www.5ifxw.com/vip/

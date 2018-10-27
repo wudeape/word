@@ -1,0 +1,11 @@
+
+Mina 框架
+Apache Mina Server 是一个网络通信应用框架，为开发高性能和高可用性的网络应用程序提供了非常便利的框架。
+
+特点：异步的NIO框架,将UDP当成"面向连接"的协议
+https://www.cnblogs.com/zhuziyu/p/9019488.html 
+
+1 使用Java 来实现通信 
+Java socket
+ https://www.cnblogs.com/rocomp/p/4790340.html 
+
