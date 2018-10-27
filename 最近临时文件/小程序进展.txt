@@ -1,0 +1,39 @@
+1 小程序页面跳转的集中方式 
+http://www.51xuediannao.com/xiaochengxu/xiaochengxu_luyou.html  
+
+微信小程序路由跳转，共有三种形式，页面中使用navigator组件做页面链接形式路由跳转，js中可以使用wx.navigateTo--保留当前页面，跳转到应用内的某个页面，wx.redirectTo--关闭当前页面，跳转到应用内的某个页面 wx.navigateBack()--关闭当前页面，回退前一页面。
+
+
+轮播图的像素大小是 宽750 高600
+<swiper>
+<swiper-item indicator-dots=”true” autoplay=”true” interval=”5000”>
+</swiper-item.
+</swiper>
+
+Indicator-dots 几个小圆点 interval 是5000ms自动切换一次 也就是5s
+默认的轮播图的显示是垂直显示vertical=”true”
+三种修改方式 
+不加入 vertical 属性
+Vertical =””
+Vertical =”{{false}}”
+
+
+Image 的四种缩放模式和9种裁剪方式
+https://developers.weixin.qq.com/miniprogram/dev/component/image.html 
+
+在进行数据的绑定的时候，如果出现了错误不会出现错误的提示，如果发现整个页面是空白的
+到那时没有错误提示，多是数据绑定除了问题 注意console中的AppData
+
+进行列表渲染，类似for循环的输出 wx:for
+在最外面使用的是 <block>， 然后循环输出数组中的内容
+
+页面的跳转
+
+
+
+
+
+
+
+
+
