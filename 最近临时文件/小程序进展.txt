@@ -28,6 +28,285 @@ https://developers.weixin.qq.com/miniprogram/dev/component/image.html
 在最外面使用的是 <block>， 然后循环输出数组中的内容
 
 页面的跳转
+1 使用wx.redirect
+(wxml 页面的部分)
+<view class="container" catchtap='onTabJump' class='journey-container'>
+<text>hello the world</text>
+</view>
+（js 调用的部分）
+// 事件监听
+  onTabJump:function(event){
+    wx.redirectTo({
+      url: '../test/test',
+      success:function(){
+        console.log("jump success")
+      },
+      fail:function(){
+        console.log("jump failed")
+      },
+      complete:function(){
+        console.log("jump complete")
+      }
+
+    });
+  },
+  
+共有三种导航的API
+wx.redirectTo
+关闭当前页面跳转到指定页面，
+
+wx.navigateTo
+保留当前页面，跳转到指定页面
+（前面两者使用的方式完全一样，都是接受object对象，然后接受三个方法，success, fail,complete）
+最重要的区别是redirect 跳转会卸载之前页面并执行 onUload事件函数
+
+
+wx.switchTap 
+只能用于跳转到tabbar的页面，并关闭其他的所有非tabbar的页面
+
+小程序中最多只允许五层页面
+
+冒泡事件，是指某个组件上的时间触发后，事件还会向父级元素传递，一直到页面的顶级元素，tap事件就是一个冒泡事件 
+在wxml注册事件时，不可直接使用 tap="function" touchmove="function" 需要在事件名之前添加catch
+或者事bind前缀，防止冒泡事件
+
+
+模块，模板，缓存
+把数据独自的放在data.js中，
+var postList=[{
+  name:data,
+}]
+暴露接口，在data.js的最下面
+module.exports ={
+  postList:postList
+ }
+在其他的js中就可以引入
+var dataObj = requrie("../../data/data.js")
+Page({
+  data:{
+  },
+  onLoad:function(){
+   this.setData({
+   postList:dataObj.postList
+   })
+  }
+
+})
+小程序的模板化 
+<template></template>
+include 和import
+如果页面只是静态的wxml 不涉及数据的传递，，可以使用include，有数据绑定的建议选择
+import 来引入postItemTpl 模板
+
+css 的模板化
+如果使用模板的话，模板中的css样式需要重新的引用 (相对路径绝对路径都可以)
+@import "post-item/post-item-tpl.wxss"
+模板里的js逻辑 是行不通的，只能用来引用一些静态的资源
+
+使用缓存在本地来模拟服务器数据库
+最好的初始化数据库在应用启动时
+设置数据缓存
+var dataObj =require("data/data.js")
+App({
+ onLaunch:function(){
+  wx.setStorage({
+   key:'postList',
+   data: dataObj.postList,
+   success:function(res){
+    //success
+   },
+   fail:function(){
+   // failed
+   },
+   complete:function(){
+   // complete
+   }
+  })
+ }
+})
+上面的是一个异步的方式，也可以设置同步缓存
+App({
+ onLaunch:function(){
+  wx.setStorageSync('postList',dataObj.postList)
+ }
+})
+同步的没有三个回调方法只接受两个参数
+wx.setStorageSync(key,data)
+在实际使用的时候，没必要在启动的时候都进行缓存，在没有数据的时候进行缓存，（然后缓存更新）
+App({
+ onLaunch:function(){
+  var storageData = wx.getStorageSync('postList');
+   if(!storageData){
+     // 如果postList缓存不存在
+     var dataObj = require("data/data.js")
+     wx.clearStorageSync();
+     wx.setStorageSync('postList',dataObj,postList);
+   }
+ }
+})
+在开发阶段 不做代码清单中是否有缓存的判断，每次应用重启后强制更新一次初始化的数据
+
+编写缓存数据库的操作类
+prototype构建数据操作类
+var DBPost=function(){
+   this.storageKyeName='postList'; //所有的文章本地缓存的存储键值
+}
+
+DBPost.prototype={
+ // 得到全部文章信息
+  getAllPostData:function(){
+  var res= wx.getStrorageSync(this.storageKeyName);
+  if(!res){
+   res = require('../data/data.js').postList;
+   this.execSetStorageSync(res);
+  }
+  return res;
+  },
+  //保存或者更新缓存数据
+   execSetStorageSync:function(data){
+   wx.setStorageSync(this.storageKeyName,data);
+  },
+
+};
+module.exports ={
+  DBPost:DBPost
+};
+
+使用缓存数据库操作类
+var DBPost= require('../db/BDPost.js').DBPost;
+ Page({
+  data:{
+  },
+  onLoad:function(){
+  // 实例化然后调用，类似java
+  var dbPost= new DBPost();
+  this.setData({
+   postList:dbPost.getAllPostData()
+  
+  });
+   }
+ 
+ })
+ 
+
+## 使用Es6  的新特性Class，Module 来改写缓存操作类
+ 
+ class DBPost{
+  constructor(url){
+  this.storageKeyName='postList';
+  }
+  
+  // 得到全部文章信息
+  getAllPostData(){
+  var res= wx.getStrorageSync(this.storageKeyName);
+  if(!res){
+   res = require('../data/data.js').postList;
+   this.execSetStorageSync(res);
+  }
+  return res;
+  },
+  //保存或者更新缓存数据
+   execSetStorageSync:function(data){
+   wx.setStorageSync(this.storageKeyName,data);
+  },
+  
+ }
+ export{DBPort}
+ 然后使用 (只有在头部的引用是发生了改变)
+import {DBPost} form '../db/DBPost.js';
+ Page({
+  data:{
+  },
+  onLoad:function(){
+  // 实例化然后调用，类似java
+  var dbPost= new DBPost();
+  this.setData({
+   postList:dbPost.getAllPostData()
+  
+  });
+   }
+ 
+ })
+ 
+ 页面传参的三种方式
+1使用全局变2 使用缓存  3 使用页面导航的URL的query参数传递
+
+组件的自定义的属性
+<!-- 使用模板然后绑定事件 -->  data-post-id
+<block wx:for"{{postList}}"" wx:for-item="item" wx:for-index="idx">
+<view catchtap='onTabToDetail' data-post-id="{{item.postId}}">
+<template is="postItemTpl" data="{{..item}}" />
+</view>
+</block>
+ 
+从console中可以看出每个文章的id 都被绑定在了view输出，并且是循环输出
+然后从 dataset 获取组件的自定义属性
+
+在post.js
+ onTapToDetail(event){
+  var postId = event.currentTarget.dataest.postId;
+  console.log(postId);
+  wx.navigateTo({
+   url:'post-detail/post-detail?id='+postId,
+  })
+ }
+ 
+ 关于自定属性的要求
+ 必须以data- 开头
+多个单词由连字符“-”连接
+单词中最后不要有大写，有的话也只是第一个有就好
+在js中获取自定义属性的时，多个单词江北转化成驼峰命名
+
+获取页面的参数值  使用& 连接多个页面参数
+在post-detail.js中添加以下的代码
+Page({
+  data:{},
+  onLoad:function(options){
+   var postId = options.id;
+  }
+})
+
+在进行页面布局的时候的思考  建议多使用flex进行元素的布局
+两个元素 一个是作者的名称  一个是作者头像 如何将两者设置为居中垂直对其
+思路，将两个元素用一个容器包裹起来，使用display:flex 设置为盒子模型
+.author-box{
+   display:flex;
+   flex-direction:row;
+   align-items:center;
+}
+
+在app.json设置导航栏文字 (全局设置)
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle":"black"
+  }
+  
+也可以进行动态的设置导航栏文字
+使用wx.setNavigationBarTitle(OBJECT) 设置导航条
+在相应的js中添加 
+Onready:function(){
+ wx.setNavigationBarTitle({
+  title:this.postData.title
+ })
+}
+如果在onLoad 或者是onShow 函数中调用会出现一闪而过
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
 
 
 

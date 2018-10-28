@@ -14,3 +14,6 @@ http://docs.openvswitch.org/en/latest/intro/install/general/#obtaining-open-vswi
 
 爱奇艺地址破解
 http://www.5ifxw.com/vip/
+
+Es 6入门学习
+http://es6.ruanyifeng.com/#docs/intro
