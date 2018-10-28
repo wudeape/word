@@ -293,6 +293,97 @@ Onready:function(){
 }
 如果在onLoad 或者是onShow 函数中调用会出现一闪而过
 
+收藏，评论，点赞工程的实现
+编写三个功能的按钮  思路是把三个功能都在tool中实现   catchtap 绑定一个相应的事件
+<view class="tool">
+  <view class="tool-item" catchtap="onUpTap" data-post-id="{{post.postId}}">
+  //  注意这里是一个渲染选择用来显示收藏或者不收藏
+     <image animation="{{animationUp}}" wx:if="{{post.upStatus}}" src="/images/icon/wx_app_liked.png" />
+     <image animation="{{animationUp}}" wx:else src="/images/icon/wx_app_like.png" />
+    <text>{{post.upNum}}</text>
+  </view>
+  <view class="tool-item comment" catchtap="onCommentTap" data-post-id="{{post.postId}}">
+    <image src="/images/icon/wx_app_message.png"></image>
+    <text>{{post.commentNum}}</text>
+  </view>
+  <view class="tool-item" catchtap="onCollectionTap" data-post-id="{{post.postId}}">
+    <image wx:if="{{post.collectionStatus}}" src="/images/icon/wx_app_collected.png" />
+    <image wx:else src="/images/icon/wx_app_collect.png" />
+    <text>{{post.collectionNum}}</text>
+  </view>
+</view>
+
+详细的功能分析
+收藏功能 需要记录两个变量值 （一个是是否被收藏，所有收藏量）
+在切换状态的web实现，使用jquery来获取image标签，动态的设置image的src属性
+但是小程序没有dom，一切都是数据绑定
+小程序中使用wx:if 和wx:else 进行条件渲染 仅仅是显示方面的设置  再上面的页面中可以看出
+
+然后是实现收藏的点击功能 (需要更新数据库)
+a，添加处理文章的收藏的方法 DBPost.js
+   //收藏
+    collect() {
+        return this.updatePostData('collect');
+    }
+b, 上者调用的是updatePostData 方法
+
+    //更新本地的点赞、评论信息、收藏、阅读量
+    updatePostData(category, newComment) {
+        var itemData = this.getPostItemById(),
+            postData = itemData.data,
+            allPostData = this.getAllPostData();
+        switch (category) {
+            case 'collect':
+                //处理收藏
+                if (!postData.collectionStatus) {
+                    //如果当前状态是未收藏
+                    postData.collectionNum++;
+                    postData.collectionStatus = true;
+                } else {
+                    // 如果当前状态是收藏
+                    postData.collectionNum--;
+                    postData.collectionStatus = false;
+                }
+        }
+        allPostData[itemData.index] = postData;
+        this.execSetStorageSync(allPostData);
+        return postData;
+    }
+};
+
+当用户点击收藏的功能的时候就调用 DBPost 的collect 方法
+不过处理文章收藏的事件函数是onCollectionTab
+onCollectionTap: function (event) {
+    var newData = this.dbPost.collect();
+
+    // 重新绑定数据。注意，不要将整个newData全部作为setData的参数，
+    // 应当有选择的更新部分数据
+
+    this.setData({
+      'post.collectionStatus': newData.collectionStatus,
+      'post.collectionNum': newData.collectionNum
+    })
+    
+ 最后是进行交互反馈
+小程序提供了四个API 来 帮助开发者进行交互
+wx.showToast 
+wx.hideToast
+wx.showModal
+wx.showActionSheet
+  wx.showToast({
+      title: newData.collectionStatus ? "收藏成功" : "取消成功",
+      duration: 1000,
+      icon: "success",
+      mask: true
+    })
+ 
+ 
+ 
+
+
+
+
+
 
 
 
