@@ -17,3 +17,6 @@ http://www.5ifxw.com/vip/
 
 Es 6入门学习
 http://es6.ruanyifeng.com/#docs/intro
+
+运维实践指南
+https://billwang139967.gitbooks.io/op_practice_book/content/

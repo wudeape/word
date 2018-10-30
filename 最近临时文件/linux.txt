@@ -1,0 +1,143 @@
+1 启动MySQL
+
+docker run -d -p 3306:3306 -e MYSQL_USER="root" -e MYSQL_PASSWORD="123456" -e MYSQL_ROOT_PASSWORD="123456" --name mysql mysql:5.7 --character-set-server=utf8 --collation-server=utf8_general_ci
+
+2 docker rm mysqlname
+
+3 firewall-cmd --zone=public --add-port=3306/tcp --permanent 
+
+
+
+glance image-create --name "centos" --file centos.qcow2 --disk-format qcow2 --container-format bare --visibility public --progress
+
+
+运维实践指南
+https://billwang139967.gitbooks.io/op_practice_book/content/
+
+{} ： 可承载一个以逗号分隔的列表，并将其展开为多个路径；
+[root@localhost test]# mkdir -pv ./tmp/{a,b}/shell
+ 
+别名 alias
+a、alias ： 显示当前 shell 进程所有可用的命令别名；
+
+b、定义别名，格式为： alias NAME='VALUE'
+
+c、通过修改配置文件定义命令别名：
+
+当前用户：~/.bashrc
+全局用户：/etc/bashrc
+Bash 进程重新读取配置文件：
+  source /path/to/config_file
+
+  . /path/to/config_file
+撤销别名： unalias
+  unalias [-a] name [name...]
+  
+ 通配符 glob
+ 1) * 任意长度的任意字符；通配符： *,?,[]
+ 2) ? 任意单个字符；
+ 3) [] 匹配指定范围内的任意单个字符
+ls -ld /etc/[ab]* 
+ 4) 匹配指定范围以外的任意单个字符；  
+ 专用字符结合：（表示一类字符中的单个）
+[:digit:] 任意单个数字，相当于 [0-9];
+[:lower:] 任意单个小写字母；
+[:upper:] 任意单个大写字母；
+[:alpha:] 任意单个大小写字母；
+[:alnum:] 任意单个数字或字母；
+[:space:] 任意空白字符；
+[:punct:] 任意单个特殊字符；
+Note：
+在使用 [] 应用专用字符集合时，外层也需要嵌套 []。
+Example：
+# ls -d /etc/*[[:digit:]]*[[:lower:]]
+
+bash 快捷键
+重新执行命令
+Ctrl + r：逆向搜索命令历史
+Ctrl + g：从历史搜索模式退出
+Ctrl + p：历史中的上一条命令
+Ctrl + n：历史中的下一条命令
+Alt + .：使用上一条命令的最后一个参数
+控制命令
+Ctrl + l：清屏
+Ctrl + o：执行当前命令，并选择上一条命令
+Ctrl + s：阻止屏幕输出
+Ctrl + q：允许屏幕输出
+Ctrl + c：终止命令
+Ctrl + z：挂起命令
+Bang (!) 命令
+!!：执行上一条命令
+!blah：执行最近的以 blah 开头的命令，如 !ls
+!blah:p：仅打印输出，而不执行
+!$：上一条命令的最后一个参数，与 Alt + . 相同
+!$:p：打印输出 !$ 的内容
+!*：上一条命令的所有参数
+!:p：打印输出 ! 的内容
+^blah：删除上一条命令中的 blah
+^blah^foo：将上一条命令中的 blah 替换为 foo
+^blah^foo^：将上一条命令中所有的 blah 都替换为 foo
+
+
+输出
+# echo "It's dangerous" > ./result.txt #输出到文件；
+# set –C #禁止将内容覆盖输出到已有文件；
+# set +C #取消禁止覆盖输出到已有文件
+cat /etc/passwd > ./file.out 2> ./error.out
+
+输入
+[root@localhost ~]# cat > hello.txt <<EOF
+> I am a good boy
+> lalla
+> EOF
+管道输出，前面输入的作为一个参数，输出到下一个文件中
+COMMAND1 | COMMAND2 | COMMAND3 | …..
+
+作用：前一个命令的执行结果将作为后一个命令执行的参数；
+
+Note:
+      最后一个命令会在当前 shell 进程的子 shell 进程中执行；
+# cat /etc/passwd | sort -t: -k3 -n | cut -d: -f1
+
+查询
+# find / -name file1	从 '/' 开始进入根文件系统搜索文件和目录
+# find / -user user1	搜索属于用户 'user1' 的文件和目录
+# find /home/user1 -name \*.bin	在目录 '/ home/user1' 中搜索带有'.bin' 结尾的文件
+# find /usr/bin -type f -atime +100	搜索在过去 100 天内未被使用过的执行文件
+# find /usr/bin -type f -mtime -10	搜索在 10 天内被创建或者修改过的文件
+# find / -name *.rpm -exec chmod 755 '{}' \;	搜索以 '.rpm' 结尾的文件并定义其权限
+# find / -xdev -name \*.rpm	搜索以 '.rpm' 结尾的文件，忽略光驱、捷盘等可移动设备
+# locate \*.ps	寻找以 '.ps' 结尾的文件 - 先运行 'updatedb' 命令
+# whereis halt	显示一个二进制文件、源码或 man 的位置
+# which halt	显示一个二进制文件或可执行文件的完整路径
+
+用户管理
+[root@localhost ~]# w
+[root@localhost ~]# who am I
+[root@Linux ~]# pkill -kill -t pts/2 剔除这个用户
+
+使用脚本创建有 sudo 权限的用户
+cat >./create_user.sh <<-'EOF'
+#!/bin/bash
+arg="ceshi"
+if id ${arg}
+then
+    echo "the username is exsit!"
+else
+    useradd $arg
+    echo "ceshi_password" | passwd --stdin $arg
+    echo "${arg} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${arg}
+fi
+EOF
+
+
+
+
+
+
+ 
+
+
+
+
+
