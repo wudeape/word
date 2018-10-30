@@ -1,0 +1,24 @@
+//将war包复制到tomcat
+docker cp /data/tomcatwar/dyt.war tomcatv1:/usr/local/tomcat/webappslawyer
+docker cp /data/tomcat/server.xml tomcatv1:/usr/local/tomcat/conf
+
+docker cp /data/tomcat/catalina.sh tomcatv1:/usr/local/tomcat/bin
+docker cp tomcatv1:/usr/local/tomcat/bin/catalina.sh /data/tomcat
+
+//将nginx配置文件复制到宿主机
+docker cp /data/nginx/nginx.conf  nginx:/etc/nginx/
+docker cp /data/nginx/default.conf  nginx:/etc/nginx/conf.d/
+
+
+docker run --privileged --cap-add SYS_ADMIN -e container=docker -it --name nginxv1 -p 80:80 -d --restart=always nginx:v1
+
+
+ssh://fyoit@192.168.1.100:2222/usr/local/git_repository/test.git
+
+
+docker cp  nginx:/var/log/nginx/access.log /data/nginx/
+
+
+/data/mysql/:/var/lib/mysql
+docker cp mysql:/etc/mysql/ /data/mysql/conf/
+docker cp /data/mysql/conf/mysql/ mysql:/etc/
