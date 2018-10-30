@@ -20,3 +20,8 @@ http://es6.ruanyifeng.com/#docs/intro
 
 运维实践指南
 https://billwang139967.gitbooks.io/op_practice_book/content/
+http://es6.ruanyifeng.com/#docs/intro
+
+添加Chrome的插件
+Tampermonkey  安装脚本的工具
+https://greasyfork.org 

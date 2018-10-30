@@ -1,0 +1,13 @@
+1 在vm中装的ubuntu不能全屏显示
+sudo apt-get install open-vm-tools
+sudo apt-get install open-vm*
+reboot
+
+查看版本信息
+cat /proc/version
+
+修改镜像库
+/etc/apt/sources.list
+
+修改网络设置
+/etc/network/interfaces
