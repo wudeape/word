@@ -130,6 +130,107 @@ else
 fi
 EOF
 
+Sed 命令
+Linux sed命令是利用script来处理文本文件。
+sed可依照script的指令，来处理、编辑文本文件。
+Sed主要用来自动编辑一个或多个文件；简化对文件的反复操作；编写转换程序等
+
+awk 脚本
+当需要输出单引号时，直接转义发现会报错。 由于 awk 脚本并不是直接执行，而是会先进行预处理，所以需要两次转义。 awk 支持递归引号。单引号内可以输出转义的单引号，双引号内可以输出转义的双引号。
+
+需要注意的是这种思想
+比如需要输出单引号，则需要下面这样：
+
+> awk 'BEGIN{print "\""}'
+"
+>  awk 'BEGIN{print "'\''"}'
+'
+当然，更简单的方式是使用十六进制来输出。
+awk 'BEGIN{print "\x27"}'
+
+$0	当前记录（这个变量中存放着整个行的内容）
+$1~$n	当前记录的第 n 个字段，字段间由 FS 分隔
+FS	输入字段分隔符 默认是空格或 Tab
+NF	当前记录中的字段个数，就是有多少列
+NR	已经读出的记录数，就是行号，从 1 开始，如果有多个文件话，这个值也是不断累加中。
+FNR	当前记录数，与 NR 不同的是，这个值会是各个文件自己的行号
+RS	输入的记录分隔符， 默认为换行符
+OFS	输出字段分隔符， 默认也是空格
+ORS	输出的记录分隔符，默认为换行符
+FILENAME	当前输入文件的名字
+
+转义符
+\\   A literal backslash.
+\a   The “alert” character; usually the ASCII BEL character.
+\b   backspace.
+\f   form-feed.
+\n   newline.
+\r   carriage return.
+\t   horizontal tab.
+\v   vertical tab.
+\xhex digits
+\c   The literal character c.
+常用的输出变量都是加上限定 比如 -F 换行输出，awk是弱类 变量，
+
+awk -F: '{if($1~/mail/) print $1}'    /etc/passwd                           // 简写
+awk -F: '{if($1~/mail/) {print $1}}'  /etc/passwd                           // 全写
+awk -F: '{if($1~/mail/) {print $1} else {print $2}}' /etc/passwd            //if...else...
+
+top命令
+top的命令行使用方式
+（1） 批量处理模式
+$ top -b 
+加上-b后，top显示的时候，将每一次显示的结果都打印出来，不会将上一次的结果给冲掉。
+（2） 显示某个进程的信息
+$ top -p pid
+如果是多个进程，只要如下：
+$ top -p pid1,pid2,pid3
+(3) 显示某个用户的进程信息
+$ top -u username
+(4) 显示线程的信息，而不是进程的信息
+$ top -H 
+(5) 设置刷屏的时间(单位为s)
+$ top -d ntime
+
+
+java CPU
+常用的排查CPU消耗 的方法
+top命令找出有问题Java进程及线程id：
+开启线程显示模式
+按CPU使用率排序
+记下Java进程id及其CPU高的线程id
+用进程id作为参数，jstack有问题的Java进程
+手动转换线程id成十六进制（可以用printf %x 1234）
+查找十六进制的线程id（可以用grep）
+查看对应的线程栈
+
+GET 和 POST 是 HTTP 请求的两种基本方法，最直观的区别就是 GET 把参数包含在 URL 中，POST 通过 request body 传递参数
+tcp 就像是汽车 http是交通规则
+
+curl www.baidu.com  返回的额是html
+curl httpbin.org/post --request POST --data "name=keenwon&website=http://keenwon.com"  返回的是json数据
+curl httpbin.org/post --form "name=tomshine" --form "f=@/Users/tomshine/test.txt"  提交本地文件作为表单
+使用 --verbose 显示通信过程，例如：
+curl httpbin.org/post --verbose --request POST --data "name=tomshine"
+设置 Referer 字段很简单，使用 --referer ，例如：
+curl httpbin.org/headers --referer http://tomshine.xyz
+使用 --header 设置头信息，httpbin.org/headers 会显示请求的头信息，我们测试下：
+curl httpbin.org/headers --header "a:1"
+使用 --cookie 来设置请求的 cookie，例如：
+curl httpbin.org/headers --cookie "name=tomshine;website=http://tomshine.xyz"
+使用 --location 参数会跟随链接的跳转，例如：
+curl httpbin.org/redirect/1 --location
+当页面需要认证时，可以使用 --user ，例如：
+curl httpbin.org/basic-auth/tomshine/123456 --user tomshine:123456
+
+tcpdump
+tcp 的三次握手
+
+
+
+
+
+
 
 
 
