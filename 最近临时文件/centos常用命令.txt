@@ -1,0 +1,46 @@
+ Centos 中常用的命令 
+开启防火墙 然后开放相应的端口
+1、运行命令：
+firewall-cmd --get-active-zones
+运行完成之后，可以看到zone名称，如下：
+2、执行如下命令命令：
+firewall-cmd --zone=public --add-port=6379/tcp --permanent
+
+3、重启防火墙，运行命令：
+firewall-cmd --reload
+4、查看端口号是否开启，运行命令：
+firewall-cmd --query-port=6379/tcp
+5、在windows下按下win+R键，输入cmd，运行命令(需开启telnet)，如果变成空界面表示成功
+
+开放端口之后远程要是仍然不能访问的话 关闭防火墙 
+Systemctl stop firewalld
+
+
+在centos中安装配置ftp 服务
+ 1  确认是否安装ftp
+Pgrep vsftp   # 查看ftp服务
+2 执行安装 
+Yum install vsftpd 
+3 开启服务
+chkconfig vsftpd on
+service vsftpd start
+4 关闭防火墙 
+Systemctl stop firewalld.service
+Systemctl disable firewalld.service
+5 设置selinux 
+vi /etc/selinux/config
+  #SELINUX=enforcing #注释掉
+  #SELINUXTYPE=targeted #注释掉
+  SELINUX=disabled #增加
+6 关闭 selinux
+Setenforce 0
+7 设置权限
+#chown root.ftp /var/ftp 
+#chmod 755 /var/ftp 
+#chmod 777 /var/ftp/pub
+8 添加账号
+Useradd 账号
+Passwd 用户名 密码
+
+
+

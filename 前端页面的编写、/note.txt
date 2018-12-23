@@ -1,0 +1,26 @@
+ centos 虚拟机
+  username admin
+  password success
+su root
+password root
+
+
+ ul中设置li横向排开的两种方法
+display:inline
+float:left
+然后出现 .  的话 选择清楚样式 list-style:none
+
+任意浏览器的默认字体高都是16px。
+所有未经调整的浏览器都符合: 1em=16px。
+那么12px=0.75em,10px=0.625em。为了简化font-size的换算
+，需要在css中的body选择器中声明Font-size=62.5%，
+这就使em值变为 16px*62.5%=10px, 这样12px=1.2em, 10px=1em,
+ 也就是说只需要将你的原来的px数值除以10，然后换上em作为单位就行了
+
+图片的垂直对齐  vertical-align  
+display 属性规定元素应该生成的框的类型
+
+
+border-radius 向div 中添加圆角边框 
+position 属性规定元素的定位类型
+cursor 属性规定要显示的光标的类型（形状） pointer 手的形状 

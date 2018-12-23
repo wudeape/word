@@ -1,0 +1,10 @@
+常用的管理命令
+https://www.bt.cn/btcode.html
+
+下载的地址
+https://www.bt.cn/download/linux.html
+
+部署一个web项目
+https://blog.csdn.net/qq_33481812/article/details/81814128
+
+

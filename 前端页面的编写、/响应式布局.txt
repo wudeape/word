@@ -1,0 +1,178 @@
+(3)相对大小的字体:字体不要使用px写死，最好使用相对大小的em，
+或者高清方案rem，这个不限制与字体，别的属性也可以这么设置
+
+)流式布局，float等float的好处是，如果宽度太小，放不下两个元素，
+后面的元素会自动滚动到前面元素的下方，不会在水平方向overflow（溢出），
+避免了水平滚动条的出现。
+
+选择加载css，<link rel="stylesheet" type="text/css" media="screen and (max-device-width: 400px)" href="tinyScreen.css" />，
+这个意思是如果屏幕宽度小于400像素（max-device-width: 400px），就加载tinyScreen.css文件。
+
+
+
+相关的参考  
+1 首先，在网页代码的头部，加入一行viewport元标签。
+
+
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+viewpoint 是网页的默认的宽度和高度 代码的意思是 网页的宽度默认等于屏幕的宽度（width=device-width），
+原始缩放比例（initial-scale=1）为1.0，即网页初始大小占屏幕面积的100%。
+
+所有主流浏览器都支持这个设置，包括IE9。对于那些老式浏览器
+（主要是IE6、7、8），需要使用css3-mediaqueries.js。
+
+ <!--[if lt IE 9]>
+　　　　<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+ <![endif]-->
+
+
+2 尽量少使用绝对宽度
+具体来说 css代码中 不能制定像素宽度
+width：xx px；
+通过百分比宽度来代替 同时配合css和cal 进行计算宽度
+
+calc是英文单词calculate(计算)的缩写，是css3的一个新增的功能
+，你可以使用calc()给元素的border、margin、pading、font-size和width等属性设置动态值。
+
+但是不能和 box-sizing:border-box 同时使用
+
+
+3 相对大小的字体
+不能使用绝对大小的px 而只能使用相对大小的em 和 高清方案 rem 
+rem 不局限于字体  width也可以使用  代替百分比
+
+注意几个简单的应用实例和相应的像素转换 
+ body {
+　　　　font: normal 100% Helvetica, Arial, sans-serif;
+　　}
+ 
+
+上面的代码指定，字体大小是页面默认大小的100%，即16像素。
+
+h1 {
+　　　　font-size: 1.5em; 
+　　}
+ 
+
+然后，h1的大小是默认大小的1.5倍，即24像素（24/16=1.5）。
+
+small {
+　　　　font-size: 0.875em;
+　}
+small元素的大小是默认大小的0.875倍，即14像素（14/16=0.875）。
+
+
+
+4 流式布局
+各个区块的位置都是浮动的 不是固定不变的 
+.main {
+　　　　float: right;
+　　　　width: 70%; 
+　　}
+
+　　.leftBar {
+　　　　float: left;
+　　　　width: 25%;
+　　} 
+
+float的好处是，如果宽度太小，放不下两个元素，后面的元素会自动滚动到前面元素的下方，
+不会在水平方向overflow（溢出），避免了水平滚动条的出现。
+
+ 另外，绝对定位（position: absolute）的使用，也要非常小心。
+
+
+
+5 选择加载 css
+
+它的意思就是，自动探测屏幕宽度，然后加载相应的CSS文件。
+
+ <link rel="stylesheet" type="text/css"
+　　　　media="screen and (max-device-width: 400px)"
+　　　　href="tinyScreen.css" />
+ 
+
+ 
+
+上面的代码意思是，如果屏幕宽度小于400像素（max-device-width: 400px），就加载tinyScreen.css文件。
+
+link rel="stylesheet" type="text/css"
+　　　　media="screen and (min-width: 400px) and (max-device-width: 600px)"
+　　　　href="smallScreen.css" />
+如果屏幕宽度在400像素到600像素之间，则加载smallScreen.css文件。
+
+ 
+
+除了用html标签加载CSS文件，还可以在现有CSS文件中加载。
+
+　@import  url("tinyScreen.css") screen and (max-device-width: 400px);
+
+
+css 的 @media 规则
+同一个 css文件可以根据不同的屏幕分辨率 选择应用不同的css规则
+ 
+
+@media  screen and (max-device-width: 400px) {
+
+　　　　.column {
+　　　　　　float: none;
+　　　　　　width:auto;
+　　　　}
+
+　　　　#sidebar {
+　　　　　　display:none;
+　　　　}
+
+　　}
+
+图片的自适应 
+这只要一行CSS代码：
+
+ img { max-width: 100%;}
+ 
+
+这行代码对于大多数嵌入网页的视频也有效，所以可以写成：
+
+     　　img, object { max-width: 100%;}
+ 
+
+老版本的IE不支持max-width，所以只好写成：
+
+    　　img { width: 100%; }
+ 
+
+此外，windows平台缩放图片时，可能出现图像失真现象。这时，可以尝试使用IE的专有命令：
+
+    　　img { -ms-interpolation-mode: bicubic; }
+
+
+
+
+
+
+深入对 css 的理解和使用
+块级元素和行内元素的
+块级元素：
+1.会另起一行，
+2.可以设置width，height，margin，padding，border属性
+3.默认宽度是容器的100%
+
+行内元素：
+1.和其他元素在同一行内
+2.高度和宽度就是内容的高度和宽度
+3.可以设置margin-left和margin-right属性，无法设置margin-top和margin-bottom属性
+4.border和padding可以设置，但是border-top和padding-top到页面顶部后就不再增加
+
+
+怎样进行样式 的覆盖
+给需要的样式 增加权值  父级元素 。。。
+
+：margin（外边距），border（边框），padding（内边距），content（内容区域） 
+
+
+具体的是西安
+
+
+
+
+

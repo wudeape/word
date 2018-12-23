@@ -1,0 +1,54 @@
+                                接口传递
+
+
+
+Restful 的基本知识 
+
+1 一套协议来规范多种形式的前端和同一个后台的交互方式
+ 
+RESTful API由后台也就是SERVER来提供前端来调用。前端调用API向后台发起HTTP请求，后台响应请求将处理结果反馈给前端。也就是说RESTful 是典型的基于HTTP的协议
+
+A  资源    通过一种载体的形式，现在文本可以实txt，也可以是html或者xml ，图片可以用JPG格式或者png， json 是现在最常用的资源的表现形式
+
+B 统一接口 restful 风格数据元操作 就是CRUD ，分别对应HTTP 方法， GET用来获得资源 ，POST 用来新建资源（更新） ，PUT用来更新资源 ，DELETE用来删除咨询
+
+C URI 可以用来指向资源 ，最好的是每个资源至少有一个URI与之对应 最经典的就是URI就是 URL
+
+D 无状态 （基本的是登录——查找——返回） 直接用一个资源对应的URL资源来查找
+由一个URL 与之对应的可以通过HTTP 中的GET方法得到资源 
+
+基本例子理解
+GET:http://www.xxx.com/source/id 获取指定ID的某一类资源。例如GET:http://www.xxx.com/friends/123表示获取ID为123的会员的好友列表。如果不加id就表示获取所有会员的好友列表。
+POST:http://www.xxx.com/friends/123表示为指定ID为123的会员新增好友。
+
+
+Webserivce note:
+Webservice 是一种跨平台的。跨语言的规范用来不同的平台，不同语言的之间的交互
+比如 天气预报接口 无数的应用需要获取天气预报信息 提佛那个的数据的项目也就一两种，但是应用功能各种平台 。开发人员一般就是在具体平台开发webservice接口 以及调用webservice 的接口，每种语言都有webservice的实现框架
+
+
+
+https://blog.csdn.net/w605283073/article/details/51338765 
+
+web 利用webserivce接口实现文件的上传
+https://blog.csdn.net/w605283073/article/details/51338765
+
+目前的需求 使用webservice 接口来 爬到的数据放到指定的文件夹下
+ 客户端和服务端两个  
+目前的是使用springmvc 来实现    表单的传值使用的是 delete 和pu
+
+
+一个比较好的博文推荐
+http://www.importnew.com/28260.html 
+
+
+
+	
+	
+
+
+
+
+
+
+

@@ -7,7 +7,7 @@ http://www.51xuediannao.com/xiaochengxu/xiaochengxu_luyou.html
 轮播图的像素大小是 宽750 高600
 <swiper>
 <swiper-item indicator-dots=”true” autoplay=”true” interval=”5000”>
-</swiper-item>
+</swiper-item.
 </swiper>
 
 Indicator-dots 几个小圆点 interval 是5000ms自动切换一次 也就是5s
@@ -63,7 +63,6 @@ wx.navigateTo
 
 wx.switchTap 
 只能用于跳转到tabbar的页面，并关闭其他的所有非tabbar的页面
-(图片的跳转 后面是收藏小图标)
 
 小程序中最多只允许五层页面
 
@@ -377,12 +376,16 @@ wx.showActionSheet
       icon: "success",
       mask: true
     })
-      
+    
+   
 文章的评论功能
 独立的页面，在js中实现一种跳转，其他主要分为两个部分
 一个是加载已经的评论 （查询）
 实现添加新评论的功能   （添加）
 在具体的实现的中需要获取相应的文章的id，并且绑定评论数据
+
+
+在小程序中如果使用动画的话，最好选择css3 的动画，小程序API 仍然存在很多的bug
 
 
  
